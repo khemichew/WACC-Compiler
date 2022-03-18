@@ -19,7 +19,8 @@ class BCETest {
         @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
-                "cannotEvaluateIndices", "free", "function", "function-free",
+                "multipleArrays", "cannotEvaluateIndices", "free", "function",
+            "function-free",
                 "if", "nested",
                 "reassignment", "redeclaration", "scope", "simple", "while"
             ]
