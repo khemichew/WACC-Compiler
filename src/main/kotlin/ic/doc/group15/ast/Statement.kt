@@ -78,3 +78,12 @@ class ExitStatementAST(
     symbolTable: SymbolTable,
     override val expr: ExpressionAST
 ) : ReturnStatementAST(parent, symbolTable, expr, BasicType.IntType)
+
+class SwitchStatementAST(
+    parent: BlockAST,
+    symbolTable: SymbolTable
+) : StatementAST(parent, symbolTable) {
+    lateinit var expr: ExpressionAST
+    lateinit var cases: Map<ExpressionAST, StatementAST>
+    lateinit var default: StatementAST
+}

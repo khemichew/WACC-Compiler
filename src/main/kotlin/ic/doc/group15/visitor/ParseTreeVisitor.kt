@@ -13,6 +13,7 @@ import ic.doc.group15.type.* // ktlint-disable no-unused-imports
 import ic.doc.group15.type.BasicType.Companion.IntType
 import ic.doc.group15.util.EscapeChar
 import java.util.*
+import kotlin.collections.HashMap
 
 class ParseTreeVisitor(
     private val topAst: AST,
@@ -191,6 +192,26 @@ class ParseTreeVisitor(
         val expr = visit(ctx.expr()) as ExpressionAST
 
         return addStatement(PrintlnStatementAST(scopeAST, symbolTable, expr))
+    }
+
+    override fun visitSwitchStat(ctx: SwitchStatContext): ASTNode {
+        log ("Visiting exit statement")
+
+        val switchStat = SwitchStatementAST(scopeAST, symbolTable)
+
+        switchStat.expr = visit(ctx.expr(0)) as ExpressionAST
+
+        val cases = HashMap<ExpressionAST, StatementAST>()
+
+        for (i in 1..ctx.expr().size - 1) {
+            cases.put(visit(ctx.expr(i)) as ExpressionAST, visit(ctx.stat_sequence(i)) as StatementAST)
+        }
+
+        switchStat.cases = cases
+
+        switchStat.default = visit(ctx.stat_sequence().last()) as StatementAST
+
+        return addStatement(switchStat)
     }
 
     override fun visitExitStat(ctx: ExitStatContext): ASTNode {
