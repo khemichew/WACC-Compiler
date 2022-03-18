@@ -32,5 +32,11 @@ emulation-test-job:
   dependencies:
     - build-job
   script:
-    - mvn surefire:test -Dtest=EmulationCITests*
+    - mvn surefire:test -Dtest=EmulationLinuxTests*
 
+bce-test-job:
+  stage: test
+  dependencies:
+    - build-job
+  script:
+    - mvn surefire:test -Dtest=BCETest*

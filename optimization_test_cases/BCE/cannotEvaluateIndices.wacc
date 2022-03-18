@@ -1,0 +1,6 @@
+begin
+  int[] x = [1, 2, 3, 4, 5];
+  int y = 4;
+  println x[y];
+  println x[3]
+end

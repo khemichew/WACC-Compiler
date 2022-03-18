@@ -1,14 +1,14 @@
 package ic.doc.group15.integration
 
 import ic.doc.group15.utils.EmulationUtils
-import ic.doc.group15.utils.EmulationUtils.Companion.exitCodeAndOutputMatchesLocal
+import ic.doc.group15.utils.EmulationUtils.Companion.exitCodeAndOutputMatchesOnline
 import ic.doc.group15.utils.TIMEOUT
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Timeout
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
-class EmulationLocalTests {
+class EmulationOnlineTests {
     private val validFolderPath = EmulationUtils.validFolderPath
     private val validModelOutputFolderPath = EmulationUtils.validModelOutputFolderPath
 
@@ -19,7 +19,7 @@ class EmulationLocalTests {
         private val arrayResultFolderPath = "$validModelOutputFolderPath/array"
 
         @Timeout(TIMEOUT)
-        @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
                 "array", "arrayBasic", "arrayEmpty", "arrayLength", "arrayLookup", "arrayNested",
@@ -30,7 +30,7 @@ class EmulationLocalTests {
             val filePath = "$arrayFolderPath/$fileName.wacc"
             val resultPath = "$arrayResultFolderPath/$fileName.txt"
 
-            exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+            exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
         }
     }
 
@@ -46,13 +46,13 @@ class EmulationLocalTests {
             private val exitResultFolderPath = "$basicResultFolderPath/exit"
 
             @Timeout(TIMEOUT)
-            @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(strings = ["exit-1", "exitBasic", "exitBasic2", "exitWrap"])
             fun testExecutionProducesExpectedExitCodeAndOutput(fileName: String) {
                 val filePath = "$exitFolderPath/$fileName.wacc"
                 val resultPath = "$exitResultFolderPath/$fileName.txt"
 
-                exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+                exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
             }
         }
 
@@ -62,13 +62,13 @@ class EmulationLocalTests {
             private val skipResultFolderPath = "$basicResultFolderPath/skip"
 
             @Timeout(TIMEOUT)
-            @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(strings = ["comment", "commentInLine", "skip"])
             fun testExecutionProducesExpectedExitCodeAndOutput(fileName: String) {
                 val filePath = "$skipFolderPath/$fileName.wacc"
                 val resultPath = "$skipResultFolderPath/$fileName.txt"
 
-                exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+                exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
             }
         }
     }
@@ -81,7 +81,7 @@ class EmulationLocalTests {
             "$validModelOutputFolderPath/expressions"
 
         @Timeout(TIMEOUT)
-        @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
                 "andExpr", "andOverOrExpr", "boolCalc", "boolExpr1", "charComparisonExpr", "divExpr",
@@ -97,7 +97,7 @@ class EmulationLocalTests {
             val filePath = "$expressionsFolderPath/$fileName.wacc"
             val resultPath = "$expressionsResultFolderPath/$fileName.txt"
 
-            exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+            exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
         }
     }
 
@@ -116,7 +116,7 @@ class EmulationLocalTests {
                 "$functionsResultFolderPath/nested_functions"
 
             @Timeout(TIMEOUT)
-            @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(
                 strings = [
                     "fibonacciFullRec", "fibonacciRecursive", "fixedPointRealArithmetic",
@@ -128,7 +128,7 @@ class EmulationLocalTests {
                 val filePath = "$nestedFunctionsFolderPath/$fileName.wacc"
                 val resultPath = "$nestedFunctionsResultFolderPath/$fileName.txt"
 
-                exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+                exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
             }
         }
 
@@ -140,7 +140,7 @@ class EmulationLocalTests {
                 "$functionsResultFolderPath/simple_functions"
 
             @Timeout(TIMEOUT)
-            @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(
                 strings = [
                     "asciiTable", "functionDeclaration", "functionDoubleReturn", "functionIfReturns",
@@ -153,7 +153,7 @@ class EmulationLocalTests {
                 val filePath = "$simpleFunctionsFolderPath/$fileName.wacc"
                 val resultPath = "$simpleFunctionsResultFolderPath/$fileName.txt"
 
-                exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+                exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
             }
         }
     }
@@ -165,13 +165,13 @@ class EmulationLocalTests {
         private val ifResultFolderPath = "$validModelOutputFolderPath/if"
 
         @Timeout(TIMEOUT)
-        @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = ["if1", "if2", "if3", "if4", "if5", "if6", "ifBasic", "ifFalse", "ifTrue", "whitespace"])
         fun testExecutionProducesExpectedExitCodeAndOutput(fileName: String) {
             val filePath = "$ifFolderPath/$fileName.wacc"
             val resultPath = "$ifResultFolderPath/$fileName.txt"
 
-            exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+            exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
         }
     }
 
@@ -184,13 +184,13 @@ class EmulationLocalTests {
         // Note: IOLoop is left out until a separate function is written to
         // handle interactive input using "echo input | refCompile/command"
         @Timeout(TIMEOUT)
-        @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = ["IOSequence"])
         fun testExecutionProducesExpectedExitCodeAndOutput(fileName: String) {
             val filePath = "$ioFolderPath/$fileName.wacc"
             val resultPath = "$ioResultFolderPath/$fileName.txt"
 
-            exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+            exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
         }
 
         @Nested
@@ -199,7 +199,7 @@ class EmulationLocalTests {
             private val printResultFolderPath = "$ioResultFolderPath/print"
 
             @Timeout(TIMEOUT)
-            @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(
                 strings = [
                     "hashInProgram", "multipleStringsAssignment", "print", "print-backspace",
@@ -211,7 +211,7 @@ class EmulationLocalTests {
                 val filePath = "$printFolderPath/$fileName.wacc"
                 val resultPath = "$printResultFolderPath/$fileName.txt"
 
-                exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+                exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
             }
         }
 
@@ -221,7 +221,7 @@ class EmulationLocalTests {
             private val readResultFolderPath = "$ioResultFolderPath/read"
 
             @Timeout(TIMEOUT)
-            @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(
                 strings = [
                     "echoBigInt", "echoBigNegInt", "echoChar", "echoInt", "echoNegInt", "echoPuncChar",
@@ -232,7 +232,7 @@ class EmulationLocalTests {
                 val filePath = "$readFolderPath/$fileName.wacc"
                 val resultPath = "$readResultFolderPath/$fileName.txt"
 
-                exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+                exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
             }
         }
     }
@@ -244,7 +244,7 @@ class EmulationLocalTests {
         private val pairsResultFolderPah = "$validModelOutputFolderPath/pairs"
 
         @Timeout(TIMEOUT)
-        @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
                 "checkRefPair", "createPair", "createPair02", "createPair03", "createRefPair", "free",
@@ -256,7 +256,7 @@ class EmulationLocalTests {
             val filePath = "$pairsFolderPath/$fileName.wacc"
             val resultPath = "$pairsResultFolderPah/$fileName.txt"
 
-            exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+            exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
         }
     }
 
@@ -275,13 +275,13 @@ class EmulationLocalTests {
                 "$runtimeErrorResultFolderPath/arrayOutOfBounds"
 
             @Timeout(TIMEOUT)
-            @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(strings = ["arrayNegBounds", "arrayOutOfBounds", "arrayOutOfBoundsWrite"])
             fun testExecutionProducesExpectedExitCodeAndOutput(fileName: String) {
                 val filePath = "$arrayOutOfBoundsFolderPath/$fileName.wacc"
                 val resultPath = "$arrayOutOfBoundsResultFolderPath/$fileName.txt"
 
-                exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+                exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
             }
         }
 
@@ -293,13 +293,13 @@ class EmulationLocalTests {
                 "$runtimeErrorResultFolderPath/divideByZero"
 
             @Timeout(TIMEOUT)
-            @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(strings = ["divideByZero", "divZero", "modByZero"])
             fun testExecutionProducesExpectedExitCodeAndOutput(fileName: String) {
                 val filePath = "$divideByZeroFolderPath/$fileName.wacc"
                 val resultPath = "$divideByZeroResultFolderPath/$fileName.txt"
 
-                exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+                exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
             }
         }
 
@@ -311,7 +311,7 @@ class EmulationLocalTests {
                 "$runtimeErrorResultFolderPath/integerOverflow"
 
             @Timeout(TIMEOUT)
-            @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(
                 strings = [
                     "intJustOverflow", "intmultOverflow", "intnegateOverflow", "intnegateOverflow2",
@@ -322,7 +322,7 @@ class EmulationLocalTests {
                 val filePath = "$integerOverflowFolderPath/$fileName.wacc"
                 val resultPath = "$integerOverflowResultFolderPath/$fileName.txt"
 
-                exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+                exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
             }
         }
 
@@ -334,13 +334,13 @@ class EmulationLocalTests {
                 "$runtimeErrorResultFolderPath/nullDereference"
 
             @Timeout(TIMEOUT)
-            @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(strings = ["freeNull", "readNull1", "readNull2", "setNull1", "setNull2", "useNull1", "useNull2"])
             fun testExecutionProducesExpectedExitCodeAndOutput(fileName: String) {
                 val filePath = "$nullDereferenceFolderPath/$fileName.wacc"
                 val resultPath = "$nullDereferenceResultFolderPath/$fileName.txt"
 
-                exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+                exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
             }
         }
     }
@@ -352,7 +352,7 @@ class EmulationLocalTests {
         private val scopeResultFolderPath = "$validModelOutputFolderPath/scope"
 
         @Timeout(TIMEOUT)
-        @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
                 "ifNested1", "ifNested2", "indentationNotImportant", "intsAndKeywords", "printAllTypes",
@@ -364,7 +364,7 @@ class EmulationLocalTests {
             val filePath = "$scopeFolderPath/$fileName.wacc"
             val resultPath = "$scopeResultFolderPath/$fileName.txt"
 
-            exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+            exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
         }
     }
 
@@ -376,7 +376,7 @@ class EmulationLocalTests {
             "$validModelOutputFolderPath/sequence"
 
         @Timeout(TIMEOUT)
-        @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
                 "basicSeq", "basicSeq2", "boolAssignment", "charAssignment", "exitSimple",
@@ -387,7 +387,7 @@ class EmulationLocalTests {
             val filePath = "$sequenceFolderPath/$fileName.wacc"
             val resultPath = "$sequenceResultFolderPath/$fileName.txt"
 
-            exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+            exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
         }
     }
 
@@ -398,7 +398,7 @@ class EmulationLocalTests {
             "$validModelOutputFolderPath/variables"
 
         @Timeout(TIMEOUT)
-        @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
                 "_VarNames", "boolDeclaration", "boolDeclaration2", "capCharDeclaration",
@@ -410,7 +410,7 @@ class EmulationLocalTests {
             val filePath = "$variablesFolderPath/$fileName.wacc"
             val resultPath = "$variablesResultFolderPath/$fileName.txt"
 
-            exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+            exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
         }
     }
 
@@ -421,7 +421,7 @@ class EmulationLocalTests {
         private val whileResultFolderPath = "$validModelOutputFolderPath/while"
 
         @Timeout(TIMEOUT)
-        @ParameterizedTest(name = "execution of assembly code generated from {0} source code produces expected exit code and output")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
                 "fibonacciFullIt", "fibonacciIterative", "loopCharCondition", "loopIntCondition", "max",
@@ -432,7 +432,7 @@ class EmulationLocalTests {
             val filePath = "$whileFolderPath/$fileName.wacc"
             val resultPath = "$whileResultFolderPath/$fileName.txt"
 
-            exitCodeAndOutputMatchesLocal(fileName, filePath, resultPath)
+            exitCodeAndOutputMatchesOnline(fileName, filePath, resultPath)
         }
     }
 }

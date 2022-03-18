@@ -26,7 +26,7 @@ class SemanticIntegrationTest {
     inner class AdvancedValidFiles {
         private val advancedValidFileFolderPath = "$validFolderPath/advanced"
 
-        @ParameterizedTest(name = "check {0} source code is semantically valid")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = ["binarySortTree", "hashTable", "ticTacToe"])
         fun testSemanticallyValid(fileName: String) {
             assertTrue(isSemanticallyValid("$advancedValidFileFolderPath/$fileName.wacc"))
@@ -37,7 +37,7 @@ class SemanticIntegrationTest {
     inner class ArrayValidFiles {
         private val arrayFolderPath = "$validFolderPath/array"
 
-        @ParameterizedTest(name = "check {0} source code is semantically valid")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
                 "array", "arrayBasic", "arrayEmpty", "arrayLength", "arrayLookup", "arrayNested",
@@ -57,7 +57,7 @@ class SemanticIntegrationTest {
         inner class ExitValidFiles {
             private val exitFolderPath = "$basicFolderPath/exit"
 
-            @ParameterizedTest(name = "check {0} source code is semantically valid")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(strings = ["exit-1", "exitBasic", "exitBasic2", "exitWrap"])
             fun testSemanticallyValid(fileName: String) {
                 assertTrue(isSemanticallyValid("$exitFolderPath/$fileName.wacc"))
@@ -68,7 +68,7 @@ class SemanticIntegrationTest {
         inner class SkipValidFiles {
             private val skipFolderPath = "$basicFolderPath/skip"
 
-            @ParameterizedTest(name = "check {0} source code is semantically valid")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(strings = ["comment", "commentInLine", "skip"])
             fun testSemanticallyValid(fileName: String) {
                 assertTrue(isSemanticallyValid("$skipFolderPath/$fileName.wacc"))
@@ -80,7 +80,7 @@ class SemanticIntegrationTest {
     inner class ExpressionValidFiles {
         private val expressionsFolderPath = "$validFolderPath/expressions"
 
-        @ParameterizedTest(name = "check {0} source code is semantically valid")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
                 "andExpr", "andOverOrExpr", "boolCalc", "boolExpr1", "charComparisonExpr", "divExpr",
@@ -105,7 +105,7 @@ class SemanticIntegrationTest {
         inner class NestedFunctionValidFiles {
             private val nestedFunctionsFolderPath = "$functionsFolderPath/nested_functions"
 
-            @ParameterizedTest(name = "check {0} source code is semantically valid")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(
                 strings = [
                     "fibonacciFullRec", "fibonacciRecursive", "fixedPointRealArithmetic",
@@ -122,7 +122,7 @@ class SemanticIntegrationTest {
         inner class SimpleFunctionValidFiles {
             private val simpleFunctionsFolderPath = "$functionsFolderPath/simple_functions"
 
-            @ParameterizedTest(name = "check {0} source code is semantically valid")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(
                 strings = [
                     "asciiTable", "functionDeclaration", "functionDoubleReturn", "functionIfReturns",
@@ -140,7 +140,7 @@ class SemanticIntegrationTest {
         inner class VoidFunctionValidFiles {
             private val voidFunctionFolderPath = "$functionsFolderPath/void_functions"
 
-            @ParameterizedTest(name = "check {0} source code is semantically valid")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(
                 strings = [
                     "voidSimple", "voidReturn", "voidCall", "voidExit"
@@ -156,7 +156,7 @@ class SemanticIntegrationTest {
     inner class HeapValidFiles {
         private val heapFolderPath = "$validFolderPath/heap"
 
-        @ParameterizedTest(name = "check {0} source code is semantically valid")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
                 "allocBasicTypes", "allocAndFree", "dereferenceAssign"
@@ -171,7 +171,7 @@ class SemanticIntegrationTest {
     inner class IfValidFiles {
         private val ifValidFileFolderPath = "$validFolderPath/if"
 
-        @ParameterizedTest(name = "check {0} source code is semantically valid")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = ["if1", "if2", "if3", "if4", "if5", "if6", "ifBasic", "ifFalse", "ifTrue", "whitespace"])
         fun testSemanticallyValid(fileName: String) {
             assertTrue(isSemanticallyValid("$ifValidFileFolderPath/$fileName.wacc"))
@@ -182,7 +182,7 @@ class SemanticIntegrationTest {
     inner class IOValidFiles {
         private val ioValidFileFolderPath = "$validFolderPath/IO"
 
-        @ParameterizedTest(name = "check {0} source code is semantically valid")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = ["IOLoop", "IOSequence"])
         fun testSemanticallyValid(fileName: String) {
             assertTrue(isSemanticallyValid("$ioValidFileFolderPath/$fileName.wacc"))
@@ -192,7 +192,7 @@ class SemanticIntegrationTest {
         inner class PrintValidFiles {
             private val printValidFileFolderPath = "$ioValidFileFolderPath/print"
 
-            @ParameterizedTest(name = "check {0} source code is semantically valid")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(
                 strings = [
                     "hashInProgram", "multipleStringsAssignment", "print", "print-backspace",
@@ -209,7 +209,7 @@ class SemanticIntegrationTest {
         inner class ReadValidFiles {
             private val readValidFileFolderPath = "$ioValidFileFolderPath/read"
 
-            @ParameterizedTest(name = "check {0} source code is semantically valid")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(
                 strings = [
                     "echoBigInt", "echoBigNegInt", "echoChar", "echoInt", "echoNegInt", "echoPuncChar",
@@ -226,7 +226,7 @@ class SemanticIntegrationTest {
     inner class PairValidFiles {
         private val pairsValidFileFolderPath = "$validFolderPath/pairs"
 
-        @ParameterizedTest(name = "check {0} source code is semantically valid")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
                 "checkRefPair", "createPair", "createPair02", "createPair03", "createRefPair", "free",
@@ -247,7 +247,7 @@ class SemanticIntegrationTest {
         inner class ArrayOutOfBoundsValidFiles {
             private val arrayOutOfBoundsValidFileFolderPath = "$runtimeErrorValidFileFolderPath/arrayOutOfBounds"
 
-            @ParameterizedTest(name = "check {0} source code is semantically valid")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(strings = ["arrayNegBounds", "arrayOutOfBounds", "arrayOutOfBoundsWrite"])
             fun testSemanticallyValid(fileName: String) {
                 assertTrue(
@@ -263,7 +263,7 @@ class SemanticIntegrationTest {
         inner class DivideByZeroValidFiles {
             private val divideByZeroValidFileFolderPath = "$runtimeErrorValidFileFolderPath/divideByZero"
 
-            @ParameterizedTest(name = "check {0} source code is semantically valid")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(strings = ["divideByZero", "divZero", "modByZero"])
             fun testSemanticallyValid(fileName: String) {
                 assertTrue(isSemanticallyValid("$divideByZeroValidFileFolderPath/$fileName.wacc"))
@@ -274,7 +274,7 @@ class SemanticIntegrationTest {
         inner class IntegerOverflowValidFiles {
             private val integerOverflowValidFileFolderPath = "$runtimeErrorValidFileFolderPath/integerOverflow"
 
-            @ParameterizedTest(name = "check {0} source code is semantically valid")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(
                 strings = [
                     "intJustOverflow", "intmultOverflow", "intnegateOverflow", "intnegateOverflow2",
@@ -295,7 +295,7 @@ class SemanticIntegrationTest {
         inner class NullDereferenceValidFiles {
             private val nullDereferenceValidFileFolderPath = "$runtimeErrorValidFileFolderPath/nullDereference"
 
-            @ParameterizedTest(name = "check {0} source code is semantically valid")
+            @ParameterizedTest(name = "{0}")
             @ValueSource(strings = ["freeNull", "readNull1", "readNull2", "setNull1", "setNull2", "useNull1", "useNull2"])
             fun testSemanticallyValid(fileName: String) {
                 assertTrue(
@@ -312,7 +312,7 @@ class SemanticIntegrationTest {
     inner class ScopeValidFiles {
         private val scopeValidFileFolderPath = "$validFolderPath/scope"
 
-        @ParameterizedTest(name = "check {0} source code is semantically valid")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
                 "ifNested1", "ifNested2", "indentationNotImportant", "intsAndKeywords", "printAllTypes",
@@ -329,7 +329,7 @@ class SemanticIntegrationTest {
     inner class SequenceValidFiles {
         private val sequenceValidFileFolderPath = "$validFolderPath/sequence"
 
-        @ParameterizedTest(name = "check {0} source code is semantically valid")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
                 "basicSeq", "basicSeq2", "boolAssignment", "charAssignment", "exitSimple",
@@ -345,7 +345,7 @@ class SemanticIntegrationTest {
     inner class VariableValidFiles {
         private val variablesValidFileFolderPath = "$validFolderPath/variables"
 
-        @ParameterizedTest(name = "check {0} source code is semantically valid")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
                 "_VarNames", "boolDeclaration", "boolDeclaration2", "capCharDeclaration",
@@ -362,7 +362,7 @@ class SemanticIntegrationTest {
     inner class WhileValidFiles {
         private val whileValidFileFolderPath = "$validFolderPath/while"
 
-        @ParameterizedTest(name = "check {0} source code is semantically valid")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
                 "fibonacciFullIt", "fibonacciIterative", "loopCharCondition", "loopIntCondition", "max",

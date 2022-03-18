@@ -22,7 +22,7 @@ import java.io.FileInputStream
 private const val TAB_CHAR = ' '
 private val tab = "$TAB_CHAR".repeat(4)
 
-private var enableLogging = false
+private var enableLogging = true
 
 fun main(args: ArgsList) {
     // Parse command line arguments
@@ -87,7 +87,7 @@ fun main(args: ArgsList) {
     val astCopy = ast
     val bceOptimizerSeq = BCEOptimizerSeq(ast, bceErrors, enableLogging =
             enableLogging)
-//    bceOptimizerSeq.removeArrayBoundChecking()
+    bceOptimizerSeq.removeArrayBoundChecking()
     if (bceErrors.hasErrors()) {
         ast = astCopy
     }

@@ -58,9 +58,13 @@ class BCEOptimizerSeq (
     @TranslatorMethod
     private fun translateAssignToIdent(node: AssignToIdentAST): AssignToIdentAST {
         log("Translating ${node.javaClass}")
-        translate(node.rhs, node.parent!!)
-        translate(node.lhs)
-        assignToArray(node.parent, node.rhs, node.type, node.lhs.varName)
+        if (node.rhsIsInitialized()) {
+            translate(node.rhs, node.parent!!)
+        }
+        translate(node.lhs, node.parent!!)
+        if (node.rhsIsInitialized()) {
+            assignToArray(node.parent, node.rhs, node.type, node.lhs.varName)
+        }
         return node
     }
 
@@ -68,17 +72,21 @@ class BCEOptimizerSeq (
     private fun translateAssignToArrayElem(node: AssignToArrayElemAST):
             AssignToArrayElemAST {
         log("Translating ${node.javaClass}")
-        translate(node.rhs, node.parent!!)
-        translate(node.lhs)
-        assignToArray(
-            node.parent,
-            node.rhs,
-            node.type,
-            getArrayName(
-                node.lhs.arrayVar.varName,
-                node.lhs.indexExpr.map { evalExpr(it) },
-                node.parent)
-        )
+        if (node.rhsIsInitialized()) {
+            translate(node.rhs, node.parent!!)
+        }
+        translate(node.lhs, node.parent!!)
+        if (node.rhsIsInitialized() && node.lhs.type is ArrayType) {
+            assignToArray(
+                node.parent,
+                node.rhs,
+                node.type,
+                getArrayName(
+                    node.lhs.arrayVar.varName,
+                    node.lhs.indexExpr.map { evalExpr(it) },
+                    node.parent)
+            )
+        }
         return node
     }
 
@@ -86,14 +94,16 @@ class BCEOptimizerSeq (
     private fun translateAssignToPairElem(node: AssignToPairElemAST):
             AssignToPairElemAST {
         log("Translating ${node.javaClass}")
-        translate(node.rhs, node.parent!!)
+        if (node.rhsIsInitialized()) {
+            translate(node.rhs, node.parent!!)
+        }
         return node
     }
 
     @TranslatorMethod
     private fun translateRead(node: ReadStatementAST): ReadStatementAST {
         log("Translating ${node.javaClass}")
-        translate(node.target, node.parent!!)
+        translate(node.target)
         return node
     }
 
@@ -215,12 +225,12 @@ class BCEOptimizerSeq (
         val arrayParams = node.actuals.filter { it.type is ArrayType }
         arrayParams.forEach { translate(it, scope) }
         arrayParams.filterIsInstance<VariableIdentifierAST>()
-            .flatMap { getAllReferences((it as VariableIdentifierAST).varName) }
+            .flatMap { getAllReferences((it).varName) }
             .forEach { addArrayUse(it, ArrayFree(scope)) }
         arrayParams.filterIsInstance<ArrayElemAST>()
             .forEach {
                 addArrayUse(getArrayName(
-                    (it as ArrayElemAST).arrayVar.varName,
+                    (it).arrayVar.varName,
                     it.indexExpr.map { evalExpr(it) },
                     scope
                     ), ArrayFree(scope))
