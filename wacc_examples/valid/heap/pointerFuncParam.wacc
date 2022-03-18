@@ -1,0 +1,19 @@
+begin
+  void writeTwo(pointer(int) p) is
+    $p = 2
+  end
+
+  pointer(int) p = alloc(sizeof int) ;
+  print "Address of p: " ;
+  println p ;
+
+  println "Setting value of $p to 1..." ;
+  $p = 1 ;
+  print "Value of $p: " ;
+  println $p ;
+
+  println "Calling writeTwo..." ;
+  call writeTwo(p) ;
+  print "Value of $p should now be 2: " ;
+  println $p
+end

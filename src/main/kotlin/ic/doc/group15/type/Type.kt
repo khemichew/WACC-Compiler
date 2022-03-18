@@ -79,6 +79,9 @@ class PointerType(
     }
 
     override fun compatible(type: Type): Boolean {
+        if (type == BasicType.IntType) {
+            return true
+        }
         if (type !is PointerType) {
             return false
         }

@@ -1,0 +1,15 @@
+begin
+  void writeTwo(pointer(int) p) is
+    $p = 2
+  end
+
+  println "Initialising value of i to 1..." ;
+  int i = 1 ;
+  print "Address of &i: " ;
+  println &i ;
+
+  println "Calling writeTwo on &i..." ;
+  call writeTwo(&i) ;
+  print "Value of i should now be 2: " ;
+  println i
+end

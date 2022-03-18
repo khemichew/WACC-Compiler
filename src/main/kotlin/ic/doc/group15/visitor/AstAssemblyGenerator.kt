@@ -25,8 +25,6 @@ import ic.doc.group15.type.BasicType.Companion.StringType
 import ic.doc.group15.util.WORD
 import java.lang.IllegalArgumentException
 import java.util.*
-import java.util.function.Consumer
-import java.util.function.Supplier
 
 private const val MAX_STACK_CHANGE = 1024
 
@@ -52,6 +50,13 @@ class AstAssemblyGenerator(
      * the sub-scope.
      */
     private val offsetStackStore = LinkedList<Int>()
+
+    /**
+     * Set by translation functions for loop blocks, so that continue and break translation
+     * functions can use them.
+     */
+    private lateinit var continueLabel: BranchLabel
+    private lateinit var breakLabel: BranchLabel
 
     /**
      * Per WACC language specification, a program matches the grammar "begin func* stat end".
@@ -158,12 +163,15 @@ class AstAssemblyGenerator(
     @TranslatorMethod
     private fun translateFreeStatement(node: FreeStatementAST) {
         log("Translating FreeStatementAST")
-        defineUtilFuncs(P_FREE_PAIR)
-        val variable = node.expr as VariableIdentifierAST
-        transRetrieve(variable.ident, node.symbolTable)
+        val utilFunc: UtilFunction = when (node.expr.type) {
+            is PairType -> P_FREE_PAIR
+            else -> P_FREE_POINTER
+        }
+        defineUtilFuncs(utilFunc)
+        translate(node.expr)
         addLines(
             Move(R0, resultRegister),
-            BranchLink(P_FREE_PAIR)
+            BranchLink(utilFunc)
         )
     }
 
@@ -265,22 +273,11 @@ class AstAssemblyGenerator(
     private fun translateReadStatement(node: ReadStatementAST) {
         log("Translating ReadStatementAST")
 
-        val assignTo = node.target.lhs
+        val assignTo = node.target
         val readFunc = if (node.target.type == IntType) P_READ_INT else P_READ_CHAR
 
         defineUtilFuncs(readFunc)
-        when (assignTo) {
-            is VariableIdentifierAST -> {
-                getAddress(assignTo)
-            }
-            is ArrayElemAST -> {
-                getAddress(assignTo)
-            }
-            is PairElemAST -> {
-                getAddress(assignTo)
-            }
-            else -> { throw IllegalArgumentException("cannot read into expression of this type") }
-        }
+        getAddress(assignTo.lhs)
         addLines(
             Move(R0, resultRegister),
             BranchLink(readFunc)
@@ -367,16 +364,25 @@ class AstAssemblyGenerator(
     private fun translateWhileBlock(node: WhileBlockAST) {
         log("Translating WhileBlockAST")
 
+        // Set the state to be used next time we translate break or continue
+        val oldBreak = breakLabel
+        val oldContinue = continueLabel
+
+        // Create the labels we need, in this precise correct order
         val oldLabel = currentLabel
+        val loopLabel = newBranchLabel()
+        val checkLabel = newBranchLabel()
+        val endLabel = newBranchLabel()
+
+        breakLabel = endLabel
+        continueLabel = checkLabel
 
         // Translate block statements and add to loop label
-        val loopLabel = newBranchLabel()
         currentLabel = loopLabel
         blockPrologue(node)
         node.getStatements().forEach { translate(it) }
         blockEpilogue(node)
 
-        val checkLabel = newBranchLabel()
         currentLabel = oldLabel
 
         // Add branch instruction
@@ -392,41 +398,74 @@ class AstAssemblyGenerator(
         addLines(
             Compare(resultRegister, IntImmediateOperand(1)),
             Branch(EQ, BranchLabelOperand(loopLabel))
+        )
+
+        // After the loop is over, reset the state and continue translating the program
+        currentLabel = endLabel
+        breakLabel = oldBreak
+        continueLabel = oldContinue
+    }
+
+    @TranslatorMethod
+    private fun translateForBlock(node: ForBlockAST) {
+        log("Translating ForBlockAST")
+
+        // Set the state to be used next time we translate break or continue
+        val oldBreak = breakLabel
+        val oldContinue = continueLabel
+
+        // Create the labels we need, in this precise correct order
+        val oldLabel = currentLabel
+        val loopLabel = newBranchLabel()
+        val updateLabel = newBranchLabel()
+        val checkLabel = newBranchLabel()
+        val endLabel = newBranchLabel()
+
+        breakLabel = endLabel
+        continueLabel = updateLabel
+
+        // Translate the loop variable declaration and branch to the loop check label
+        currentLabel = oldLabel
+        blockPrologue(node)
+        translate(node.varDecl)
+        blockEpilogue(node)
+        addLines(
+            Branch(BranchLabelOperand(checkLabel))
+        )
+
+        // Translate the loop block statements
+        currentLabel = loopLabel
+        node.getStatements().forEach { translate(it) }
+
+        // Add the loop update statement right after the loop label
+        currentLabel = updateLabel
+        translate(node.loopUpdate)
+
+        // Translate condition statement, and branch back to the loop label if the condition is met
+        currentLabel = checkLabel
+        translate(node.condExpr)
+        addLines(
+            Compare(resultRegister, IntImmediateOperand(1)),
+            Branch(EQ, BranchLabelOperand(loopLabel))
+        )
+
+        // After the loop is over, reset the state and continue translating the program
+        currentLabel = endLabel
+        breakLabel = oldBreak
+        continueLabel = oldContinue
+    }
+
+    @TranslatorMethod
+    fun translateContinueStatement(node: ContinueStatementAST) {
+        addLines(
+            Branch(BranchLabelOperand(continueLabel))
         )
     }
 
     @TranslatorMethod
-    private fun transForBlock(node: ForBlockAST) {
-        log("Translating ForBlockAST")
-
-        translate(node.varDecl)
-
-        val oldLabel = currentLabel
-
-        // Translate block statements and add to loop label
-        val loopLabel = newBranchLabel()
-        currentLabel = loopLabel
-        blockPrologue(node)
-        node.getStatements().forEach { translate(it) }
-        translate(node.incrementStat)
-        blockEpilogue(node)
-
-        val checkLabel = newBranchLabel()
-        currentLabel = oldLabel
-
-        // Add branch instruction
+    fun translateBreakStatement(node: BreakStatementAST) {
         addLines(
-            Branch(BranchLabelOperand(checkLabel))
-        )
-
-        // Translate condition statements and add to check label
-        currentLabel = checkLabel
-        translate(node.condExpr)
-
-        // Add compare and branch instruction
-        addLines(
-            Compare(resultRegister, IntImmediateOperand(1)),
-            Branch(EQ, BranchLabelOperand(loopLabel))
+            Branch(BranchLabelOperand(breakLabel))
         )
     }
 
@@ -526,9 +565,19 @@ class AstAssemblyGenerator(
     }
 
     @TranslatorMethod
+    private fun translateReference(node: ReferenceAST) {
+        log("Translating ReferenceAST")
+        getAddress(node.item.lhs)
+    }
+
+    @TranslatorMethod
     private fun translateDeref(node: DerefPointerAST) {
         log("Translating DerefPointerAST")
-        getAddress(node)
+        // Get the address of the data
+        // Essentially, perform n - 1 dereferences
+        // e.g. for $$$i, load $$i into R0
+        getAddressDeref(node)
+        // Perform the final dereference, so find $R0
         addLines(
             Move(R0, resultRegister),
             BranchLink(P_CHECK_NULL_POINTER),
@@ -661,7 +710,7 @@ class AstAssemblyGenerator(
         }
 
         // load address of value into resultRegister
-        getAddress(node)
+        getAddressArrayElem(node)
 
         addLines(
             Load(node.type.size, resultRegister, ZeroOffset(resultRegister))
@@ -753,7 +802,7 @@ class AstAssemblyGenerator(
     }
 
     private fun translatePairElem(node: PairElemAST, elemType: VariableType) {
-        getAddress(node)
+        getAddressPairElem(node)
         assert(node.expr.type.size == WORD)
         addLines(
             Load(elemType.size, resultRegister, ZeroOffset(resultRegister))
@@ -763,23 +812,16 @@ class AstAssemblyGenerator(
     @TranslatorMethod
     private fun translateAssignToPairElem(node: AssignToPairElemAST) {
         log("Translating AssignToPairElemAST")
-        translateAssignToPointer(node) {
-            getAddress(it as PairElemAST)
-        }
+        translateAssignToPointer(node)
     }
 
     @TranslatorMethod
     private fun translateAssignToDeref(node: AssignToDerefAST) {
         log("Translating AssignToDerefAST")
-        translateAssignToPointer(node) {
-            getAddress(it as DerefPointerAST)
-        }
+        translateAssignToPointer(node)
     }
 
-    private fun <T : AssignmentAST<*>> translateAssignToPointer(
-        node: T,
-        getAddress: Consumer<ASTNode>
-    ) {
+    private fun translateAssignToPointer(node: AssignToLhsAST<*>) {
         val oldResultRegister = resultRegister
 
         // Translate the expression to assign
@@ -789,7 +831,7 @@ class AstAssemblyGenerator(
         resultRegister = resultRegister.nextReg()
 
         // Get the address in memory at which we will store the rhs
-        getAddress.accept(node.lhs)
+        getAddress(node.lhs)
 
         // Write the expression result to the address
         addLines(
@@ -1158,13 +1200,35 @@ class AstAssemblyGenerator(
         }
     }
 
-    private fun getAddress(variable: VariableIdentifierAST) {
+    private fun getAddress(assignTo: AssignRhsAST) {
+        when (assignTo) {
+            is VariableIdentifierAST -> {
+                getAddressIdent(assignTo)
+            }
+            is ArrayElemAST -> {
+                getAddressArrayElem(assignTo)
+            }
+            is PairElemAST -> {
+                getAddressPairElem(assignTo)
+            }
+            is DerefPointerAST -> {
+                getAddressDeref(assignTo)
+            }
+            is BinaryOpExprAST -> {
+                assert(assignTo.type is PointerType)
+                translate(assignTo)
+            }
+            else -> { throw IllegalArgumentException("cannot get address of this type") }
+        }
+    }
+
+    private fun getAddressIdent(variable: VariableIdentifierAST) {
         addLines(
             Add(resultRegister, SP, IntImmediateOperand(variable.ident.stackPosition))
         )
     }
 
-    private fun getAddress(arrayElem: ArrayElemAST) {
+    private fun getAddressArrayElem(arrayElem: ArrayElemAST) {
         val variable = arrayElem.arrayVar.ident
 
         addLines(Add(resultRegister, SP, IntImmediateOperand(variable.stackPosition)))
@@ -1199,7 +1263,7 @@ class AstAssemblyGenerator(
         }
     }
 
-    private fun getAddress(pairElemAST: PairElemAST) {
+    private fun getAddressPairElem(pairElemAST: PairElemAST) {
         defineUtilFuncs(
             P_CHECK_NULL_POINTER
         )
@@ -1216,7 +1280,7 @@ class AstAssemblyGenerator(
         )
     }
 
-    private fun getAddress(derefPointerAST: DerefPointerAST) {
+    private fun getAddressDeref(derefPointerAST: DerefPointerAST) {
         defineUtilFuncs(
             P_CHECK_NULL_POINTER
         )

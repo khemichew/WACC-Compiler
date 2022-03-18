@@ -47,6 +47,8 @@ SKIP_STAT: 'skip';
 END_STAT: ';';
 BEGIN: 'begin';
 END: 'end';
+CONTINUE: 'continue loop';
+BREAK: 'break loop';
 
 //heap
 NEWPAIR: 'newpair';
@@ -55,6 +57,7 @@ NULL: 'null';
 SIZEOF: 'sizeof';
 POINTER: 'pointer';
 DEREF: '$';
+REF: '&';
 ALLOC: 'alloc';
 FREE: 'free';
 

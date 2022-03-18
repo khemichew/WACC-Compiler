@@ -2,6 +2,7 @@ package ic.doc.group15.ast
 
 import ic.doc.group15.SymbolTable
 import ic.doc.group15.type.*
+import kotlin.math.exp
 
 abstract class ExpressionAST protected constructor(
     symbolTable: SymbolTable = SymbolTable.emptyTable,
@@ -24,6 +25,11 @@ open class VariableIdentifierAST(
     val varName: String,
     open val ident: Variable
 ) : ExpressionAST(symbolTable, ident.type)
+
+class ReferenceAST(
+    symbolTable: SymbolTable,
+    val item: AssignToLhsAST<*>
+) : ExpressionAST(symbolTable, PointerType(item.type, 1))
 
 class DerefPointerAST(
     symbolTable: SymbolTable,
@@ -50,5 +56,14 @@ class BinaryOpExprAST(
     symbolTable: SymbolTable,
     val expr1: ExpressionAST,
     val expr2: ExpressionAST,
-    val operator: BinaryOp
-) : ExpressionAST(symbolTable, operator.returnType)
+    val operator: BinaryOp,
+    returnType: VariableType
+) : ExpressionAST(symbolTable, returnType) {
+
+    constructor(
+        symbolTable: SymbolTable,
+        expr1: ExpressionAST,
+        expr2: ExpressionAST,
+        operator: BinaryOp
+    ) : this(symbolTable, expr1, expr2, operator, operator.returnType)
+}

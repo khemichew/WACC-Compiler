@@ -8,7 +8,7 @@ abstract class AssignRhsAST protected constructor(
     val type: VariableType
 ) : ASTNode(symbolTable)
 
-abstract class AssignmentAST<T : ASTNode> protected constructor(
+abstract class AssignToLhsAST<T : AssignRhsAST> protected constructor(
     parent: BlockAST,
     val lhs: T,
     val type: VariableType,
@@ -23,22 +23,22 @@ abstract class AssignmentAST<T : ASTNode> protected constructor(
 class AssignToIdentAST(
     parent: BlockAST,
     lhs: VariableIdentifierAST
-) : AssignmentAST<VariableIdentifierAST>(parent, lhs, lhs.type)
+) : AssignToLhsAST<VariableIdentifierAST>(parent, lhs, lhs.type)
 
 class AssignToArrayElemAST(
     parent: BlockAST,
     lhs: ArrayElemAST
-) : AssignmentAST<ArrayElemAST>(parent, lhs, lhs.type)
+) : AssignToLhsAST<ArrayElemAST>(parent, lhs, lhs.type)
 
 class AssignToPairElemAST(
     parent: BlockAST,
     lhs: PairElemAST
-) : AssignmentAST<PairElemAST>(parent, lhs, lhs.type)
+) : AssignToLhsAST<PairElemAST>(parent, lhs, lhs.type)
 
 class AssignToDerefAST(
     parent: BlockAST,
     lhs: DerefPointerAST
-) : AssignmentAST<DerefPointerAST>(parent, lhs, lhs.type)
+) : AssignToLhsAST<DerefPointerAST>(parent, lhs, lhs.type)
 
 class ArrayLiteralAST(
     symbolTable: SymbolTable,

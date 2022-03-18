@@ -9,10 +9,10 @@ import ic.doc.group15.error.SemanticErrorList
 import ic.doc.group15.error.SyntacticErrorList
 import ic.doc.group15.error.syntactic.SyntacticErrorListener
 import ic.doc.group15.visitor.AstAssemblyGenerator
-import ic.doc.group15.visitor.AssemblyGenerator
 import ic.doc.group15.visitor.BCEOptimizerSeq
 import ic.doc.group15.visitor.ParseTreeVisitor
-import ic.doc.group15.visitor.ReturnChecker
+import ic.doc.group15.visitor.syntaxchecker.BreakContinueChecker
+import ic.doc.group15.visitor.syntaxchecker.ReturnChecker
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import java.io.BufferedInputStream
@@ -57,8 +57,14 @@ fun main(args: ArgsList) {
 
     val syntacticErrors = SyntacticErrorList()
 
+    // Check that functions have correct return statements.
     val returnChecker = ReturnChecker(syntacticErrors, enableLogging = enableLogging)
     returnChecker.visit(program)
+    syntacticErrors.checkErrors()
+
+    // Check that break and continue statements are inside loops.
+    val breakContinueChecker = BreakContinueChecker(syntacticErrors, enableLogging = enableLogging)
+    breakContinueChecker.visit(program)
     syntacticErrors.checkErrors()
 
     // Perform semantic analysis and build the AST

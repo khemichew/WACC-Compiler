@@ -1,4 +1,4 @@
-package ic.doc.group15.visitor
+package ic.doc.group15.visitor.syntaxchecker
 
 import ic.doc.group15.antlr.WaccParser
 import ic.doc.group15.antlr.WaccParserBaseVisitor
@@ -23,7 +23,7 @@ class ReturnChecker(
             log("Return type of $funcName is void! No need to check for return statements.")
             return true
         }
-        val validReturn = visit(ctx.stat()) ?: false
+        val validReturn = visit(ctx.stat_sequence()) ?: false
         if (!validReturn) {
             log("No valid return statements found for $funcName!")
             syntacticErrors.addError(
@@ -34,7 +34,7 @@ class ReturnChecker(
     }
 
     override fun visitIfStat(ctx: WaccParser.IfStatContext): Boolean {
-        return (visit(ctx.stat(0)) ?: false) && (visit(ctx.stat(1)) ?: false)
+        return (visit(ctx.stat_sequence(0)) ?: false) && (visit(ctx.stat_sequence(1)) ?: false)
     }
 
     override fun visitReturnStat(ctx: WaccParser.ReturnStatContext): Boolean {

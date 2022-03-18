@@ -159,7 +159,8 @@ class SemanticIntegrationTest {
         @ParameterizedTest(name = "{0}")
         @ValueSource(
             strings = [
-                "allocBasicTypes", "allocAndFree", "dereferenceAssign"
+                "allocBasicTypes", "allocAndFree", "dereferenceAssign", "allocToPointerOffset",
+                "pointerFuncParam", "pointerFuncParamReference"
             ]
         )
         fun testSemanticallyValid(fileName: String) {

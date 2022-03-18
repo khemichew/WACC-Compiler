@@ -5,29 +5,39 @@ options {
 }
 
 // EOF indicates that the program must consume to the end of the input.
-program: BEGIN (func)* stat END EOF;
+program: BEGIN (func)* stat_sequence END EOF;
 
 func: return_type ident OPEN_PAREN (param (COMMA param)*)? CLOSE_PAREN IS
-          stat
+          stat_sequence
       END;
 
 param: type ident;
 
+decl: type ident ASSIGN assign_rhs;
+
+stat_sequence: stat (END_STAT stat_sequence)?;
+
+for_stat: FOR OPEN_PAREN decl END_STAT expr END_STAT stat CLOSE_PAREN DO stat_sequence DONE;
+
+for_range_stat: FOR ident INRANGE (int_liter COMMA int_liter) DO stat_sequence DONE;
+
 stat: SKIP_STAT                                                     #skipStat
-    | type ident ASSIGN assign_rhs                                  #declarationStat
+    | decl                                                          #declarationStat
     | assign_lhs ASSIGN assign_rhs                                  #assignmentStat
     | call                                                          #callStat
     | READ assign_lhs                                               #readStat
     | FREE expr                                                     #freeStat
     | EXIT expr                                                     #exitStat
+    | CONTINUE                                                      #continueStat
+    | BREAK                                                         #breakStat
     | PRINT expr                                                    #printStat
     | PRINTLN expr                                                  #printlnStat
-    | IF expr THEN stat ELSE stat FI                                #ifStat
-    | WHILE expr DO stat DONE                                       #whileStat
-    | FOR IDENT INRANGE POSITIVE_OR_NEGATIVE_INTEGER DO stat DONE   #forStat
-    | BEGIN stat END                                                #beginEndStat
+    | IF expr THEN stat_sequence ELSE stat_sequence FI              #ifStat
+    | WHILE expr DO stat_sequence DONE                              #whileStat
+    | for_stat                                                      #forStat
+    | for_range_stat                                                #forInRangeStat
+    | BEGIN stat_sequence END                                       #beginEndStat
     | RETURN expr?                                                  #returnStat
-    | stat END_STAT stat                                            #sequenceStat
 ;
 
 assign_lhs: pointer_deref                                           #derefAssignLhs
@@ -79,6 +89,7 @@ pointer_type: POINTER OPEN_PAREN type CLOSE_PAREN;
 
 expr: OPEN_PAREN expr CLOSE_PAREN                                   #bracketExpr
     | SIZEOF type                                                   #sizeofExpr
+    | REF assign_lhs                                                #referenceExpr
     | pointer_deref                                                 #derefExpr
     | int_liter                                                     #singleElemExpr
     | bool_liter                                                    #singleElemExpr

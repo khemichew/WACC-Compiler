@@ -207,13 +207,24 @@ class BinaryOpTypeError(
     actualType
 )
 
-class BinaryOpDifferentTypesError(
+class BinaryOpIncompatibleTypesError(
     binaryExprToken: Token,
     expectedType: Type,
     actualType: Type
 ) : TypeError(
     binaryExprToken,
-    "Operands of binary expression must have the same type",
+    "Operands of binary expression must be compatible",
+    expectedType,
+    actualType
+)
+
+class ComparingPointerWithNonPointerError(
+    comparingBinaryOpToken: Token,
+    expectedType: Type,
+    actualType: Type
+) : TypeError(
+    comparingBinaryOpToken,
+    "Cannot compare a pointer with a non-pointer value",
     expectedType,
     actualType
 )

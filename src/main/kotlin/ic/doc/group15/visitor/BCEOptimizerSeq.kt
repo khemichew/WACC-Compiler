@@ -8,7 +8,7 @@ import ic.doc.group15.type.Type
 import java.util.*
 import kotlin.collections.ArrayDeque
 
-class BCEOptimizerSeq (
+class BCEOptimizerSeq(
     private val ast: AST,
     private val errors: BCEErrorList,
     private val enableLogging: Boolean = true
@@ -116,7 +116,7 @@ class BCEOptimizerSeq (
             } else if (node.expr is ArrayElemAST) {
                 addArrayUse(getArrayName(
                     node.expr.arrayVar.varName,
-                    node.expr.indexExpr.map{ evalExpr(it) },
+                    node.expr.indexExpr.map { evalExpr(it) },
                     node.parent!!),
                 ArrayFree(node.parent))
             } else {
@@ -273,7 +273,7 @@ class BCEOptimizerSeq (
         name: String,
         indices: List<Int?>,
         scope: BlockAST
-    ) : String {
+    ): String {
         val first = indices.first()
         return if (indices.isEmpty()) {
             name
@@ -363,7 +363,7 @@ class BCEOptimizerSeq (
         }
     }
 
-    private fun isSubscopeOf(subscope: BlockAST, superscope: BlockAST): 
+    private fun isSubscopeOf(subscope: BlockAST, superscope: BlockAST):
             Boolean {
         if (subscope == superscope) {
             return true
@@ -392,11 +392,10 @@ class BCEOptimizerSeq (
             null
         }
     }
-    
+
     private fun log(message: String) {
         if (enableLogging) {
             println(message)
         }
     }
-
 }

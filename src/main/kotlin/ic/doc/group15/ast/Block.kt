@@ -30,8 +30,6 @@ class FunctionDeclarationAST(
     lateinit var funcIdent: FunctionType
 
     val formals: MutableList<ParameterAST> = mutableListOf()
-
-    var returnStat: ReturnStatementAST? = null
 }
 
 class IfBlockAST(
@@ -48,19 +46,49 @@ class ElseBlockAST(
     symbolTable: SymbolTable
 ) : BlockAST(parent, symbolTable)
 
-class WhileBlockAST(
-    parent: BlockAST,
-    symbolTable: SymbolTable,
-    val condExpr: ExpressionAST
-) : BlockAST(parent, symbolTable)
-
-class ForBlockAST(
+abstract class LoopBlockAST protected constructor(
     parent: BlockAST,
     symbolTable: SymbolTable
 ) : BlockAST(parent, symbolTable) {
     lateinit var condExpr: ExpressionAST
+
+    constructor(
+        parent: BlockAST,
+        symbolTable: SymbolTable,
+        condExpr: ExpressionAST
+    ) : this(parent, symbolTable) {
+        this.condExpr = condExpr
+    }
+}
+
+class WhileBlockAST(
+    parent: BlockAST,
+    symbolTable: SymbolTable
+) : LoopBlockAST(parent, symbolTable) {
+
+    constructor(
+        parent: BlockAST,
+        symbolTable: SymbolTable,
+        condExpr: ExpressionAST
+    ) : this(parent, symbolTable) {
+        this.condExpr = condExpr
+    }
+}
+
+class ForBlockAST(
+    parent: BlockAST,
+    symbolTable: SymbolTable,
+) : LoopBlockAST(parent, symbolTable) {
     lateinit var varDecl: VariableDeclarationAST
-    lateinit var incrementStat: StatementAST
+    lateinit var loopUpdate: StatementAST
+
+    constructor(
+        parent: BlockAST,
+        symbolTable: SymbolTable,
+        condExpr: ExpressionAST
+    ) : this(parent, symbolTable) {
+        this.condExpr = condExpr
+    }
 }
 
 open class BeginEndBlockAST(
