@@ -21,23 +21,24 @@ for_stat: FOR OPEN_PAREN decl END_STAT expr END_STAT stat CLOSE_PAREN DO stat_se
 
 for_range_stat: FOR ident INRANGE (int_liter COMMA int_liter) DO stat_sequence DONE;
 
-stat: SKIP_STAT                                                     #skipStat
-    | decl                                                          #declarationStat
-    | assign_lhs ASSIGN assign_rhs                                  #assignmentStat
-    | call                                                          #callStat
-    | READ assign_lhs                                               #readStat
-    | FREE expr                                                     #freeStat
-    | EXIT expr                                                     #exitStat
-    | CONTINUE                                                      #continueStat
-    | BREAK                                                         #breakStat
-    | PRINT expr                                                    #printStat
-    | PRINTLN expr                                                  #printlnStat
-    | IF expr THEN stat_sequence ELSE stat_sequence FI              #ifStat
-    | WHILE expr DO stat_sequence DONE                              #whileStat
-    | for_stat                                                      #forStat
-    | for_range_stat                                                #forInRangeStat
-    | BEGIN stat_sequence END                                       #beginEndStat
-    | RETURN expr?                                                  #returnStat
+stat: SKIP_STAT                                                       #skipStat
+    | decl                                                            #declarationStat
+    | assign_lhs ASSIGN assign_rhs                                    #assignmentStat
+    | call                                                            #callStat
+    | READ assign_lhs                                                 #readStat
+    | FREE expr                                                       #freeStat
+    | EXIT expr                                                       #exitStat
+    | CONTINUE                                                        #continueStat
+    | BREAK                                                           #breakStat
+    | PRINT expr                                                      #printStat
+    | PRINTLN expr                                                    #printlnStat
+    | IF expr THEN stat_sequence ELSE stat_sequence FI                #ifStat
+    | SWITCH expr (CASE expr stat_sequence)* DEFAULT stat_sequence FI #switchStat
+    | WHILE expr DO stat_sequence DONE                                #whileStat
+    | for_stat                                                        #forStat
+    | for_range_stat                                                  #forInRangeStat
+    | BEGIN stat_sequence END                                         #beginEndStat
+    | RETURN expr?                                                    #returnStat
 ;
 
 assign_lhs: pointer_deref                                           #derefAssignLhs

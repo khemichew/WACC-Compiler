@@ -35,6 +35,9 @@ PRINTLN: 'println';
 
 //flow control operators
 IF: 'if';
+SWITCH: 'switch';
+CASE: 'case';
+DEFAULT: 'default';
 FI: 'fi';
 THEN: 'then';
 ELSE: 'else';
