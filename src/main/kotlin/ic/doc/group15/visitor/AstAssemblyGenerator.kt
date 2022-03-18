@@ -343,6 +343,55 @@ class AstAssemblyGenerator(
         currentLabel = fiLabel
     }
 
+    @TranslatorMethod
+    private fun translateSwitchStat(stat: SwitchStatementAST) {
+        log("Translating SwitchStatAST")
+
+        // evaluate the switch case expression
+        translate(stat.expr)
+
+        // we create labels corresponding to each case and the fi label at the end
+        val labels = HashMap<ExpressionAST, BranchLabel>()
+        for (expr in stat.cases.keys) {
+            labels[expr] = newBranchLabel()
+        }
+        val defaultLabel = newBranchLabel()
+        val fiLabel = newBranchLabel()
+
+        // now go through the expressions for each case, evaluate each one,
+        // check if it is the value we are trying to match, and if so branch
+        // to the corresponding label
+        resultRegister = resultRegister.nextReg()
+        for (expr in stat.cases.keys) {
+            translate(expr)
+            addLines(
+                Compare(resultRegister, resultRegister.prevReg()),
+                Branch(EQ, BranchLabelOperand(labels[expr] as BranchLabel))
+            )
+        }
+
+        // here we evaluate the code for each block of the switch statement under
+        // their respective labels and then branch to the fi label as we don't
+        // want fall through behaviour
+        for (expr in stat.cases.keys) {
+            currentLabel = labels[expr] as BranchLabel
+            blockPrologue(stat.cases[expr] as BlockAST)
+            (stat.cases[expr] as BlockAST).getStatements().forEach(::translate)
+            blockEpilogue(stat.cases[expr] as BlockAST)
+            addLines(
+                Branch(BranchLabelOperand(fiLabel))
+            )
+        }
+
+        // finally we evaluate the default case
+        currentLabel = defaultLabel
+        blockPrologue(stat.default as BlockAST)
+        (stat.default as BlockAST).getStatements().forEach(::translate)
+        blockEpilogue(stat.default as BlockAST)
+
+        currentLabel = fiLabel
+    }
+
     /**
      * Per WACC language spec, a while-block matches the grammar "while expr do stat done"
      * The while block follows the basic implementation as follows:
