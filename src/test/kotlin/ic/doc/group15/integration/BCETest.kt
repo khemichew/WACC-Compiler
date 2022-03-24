@@ -1,5 +1,6 @@
 package ic.doc.group15.integration
 
+import ic.doc.group15.Option
 import ic.doc.group15.utils.EmulationUtils.Companion.exitCodeAndOutputMatchesOptimization
 import ic.doc.group15.utils.TIMEOUT
 import org.junit.jupiter.api.Nested
@@ -28,7 +29,8 @@ class BCETest {
         fun testExecutionProducesExpectedExitCodeAndOutput(fileName: String) {
             val filePath = "$bceFolder/$fileName.wacc"
 
-            exitCodeAndOutputMatchesOptimization(fileName, filePath)
+            exitCodeAndOutputMatchesOptimization(fileName, filePath,
+                compileOption = Option.OPTIMISATION_LEVEL_1)
         }
     }
 }

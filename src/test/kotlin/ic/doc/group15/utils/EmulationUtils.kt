@@ -1,5 +1,6 @@
 package ic.doc.group15.utils
 
+import ic.doc.group15.Option
 import org.apache.maven.surefire.shade.org.apache.commons.io.IOUtils
 import org.junit.jupiter.api.Assertions.assertTrue
 import java.io.File
@@ -51,10 +52,12 @@ class EmulationUtils {
 
         fun exitCodeAndOutputMatchesOptimization(
             fileName: String,
-            filePath: String
+            filePath: String,
+            compileOption: Option? = null
         ) {
             exitCodeAndOutputMatches(fileName, filePath, actualSource =
-            ActualSource.Online, expectedSource = ExpectedSource.Online)
+            ActualSource.Online, expectedSource = ExpectedSource.Online,
+                compileOption = compileOption)
         }
 
         private fun exitCodeAndOutputMatches(
@@ -62,10 +65,11 @@ class EmulationUtils {
             filePath: String,
             resultPath: String? = null,
             actualSource: ActualSource = ActualSource.Linux,
-            expectedSource: ExpectedSource = ExpectedSource.Cache
+            expectedSource: ExpectedSource = ExpectedSource.Cache,
+            compileOption: Option? = null
         ) {
             log("Testing: $filePath")
-            compile(filePath)
+            compile(filePath, compileOption)
             val actualExitCode: Int
             val actualOutput: String
             val actualAssembly: String
@@ -135,11 +139,12 @@ class EmulationUtils {
             return Triple(exitCode, output, assembly)
         }
 
-        private fun compile(path: String) {
+        private fun compile(path: String, compileOption: Option? = null) {
+            val optionStr = compileOption?.print() ?: ""
             val compilation = ProcessBuilder(
                 bash,
                 options,
-                "./compile $path $saveErrors"
+                "./compile $path $optionStr $saveErrors"
             ).start()
             val compilationExitStatus = compilation.waitFor()
             val compilationOutput = IOUtils.toString(

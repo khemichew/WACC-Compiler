@@ -46,4 +46,8 @@ enum class Option(val alt: String, val description: String) : OptionArg {
     override fun alt(): String {
         return alt
     }
+
+    fun print(): String {
+        return "-$alt"
+    }
 }
